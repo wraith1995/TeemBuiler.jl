@@ -1,0 +1,39 @@
+language: julia
+os:
+  - linux
+julia:
+  - 1.0
+notifications:
+  email: false
+git:
+  depth: 99999999
+cache:
+  timeout: 1000
+  directories:
+    - downloads
+env:
+  global:
+    - BINARYBUILDER_DOWNLOADS_CACHE=downloads
+    - BINARYBUILDER_AUTOMATIC_APPLE=false
+sudo: required
+
+# Before anything else, get the latest versions of things
+before_script:
+  - julia -e 'using Pkg; pkg"add BinaryProvider"; pkg"add BinaryBuilder#master"; Pkg.build()'
+
+script:
+  - julia build_tarballs.jl
+
+
+deploy:
+    provider: releases
+    api_key:
+        # Note; this api_key is only valid for wraith1995/Teem.jl; you need
+        # to make your own: https://docs.travis-ci.com/user/deployment/releases/
+        secure: reo/gfoFndFcA/M1WmXE1LcY+nzLdS1bH4gFsVOSxCwKoiJaj+XjG3HViW1G32Q6Ra1hruJwOAc9A5S/0IogB2tcZJOtq+M1YWI5YFdOU2HW8pFSQSYU5bO0gC5dQjs6aFo1ZUROBPISm/fbIifQtamZhabxPEsJkFpyi9n4cM0yfRKtKoFx0M/FUcwINiXICuSSbvDcbegQdc8EorkYVLhiLg+5wPMhFEQv8W9Y+L49aXH8t+vKhdD3etynzBgxOCjtRu/7dfMzB4AjsQXcioNvmz4KL2Ef7MVJEtwfJhWKZUaxEXeowJNoSDbedtShkDOnHmrXTahmHSdB876ZXeVXxaCm0pXcVvoidgKXhPz4C/Kc3C/63efW2CrMPjky6u5bT9owISlz32L2lSspkFp24/S8395ezHB8dgAzHVMljB8NujHGc/BChrXdIhkPMZ57qGT6iwFL6NUB7uYzvS7Kri/3tKHhljHwM7sqi6QyI0tbIVjWg1NcxOaD1FVrRgUR6wIl/RQzS3MDHJCtTBogbIM28x8fE0eTMbl5NUs0lWCliNl+QUVNWPUTgVkL9KUFeFFVd4Nq5tA0WJpw+H3Mb4dd1gp31LjHZD7FdhofskLgzlAQV1VTAo35QEqH9tp+tkTsadxZsC0CUlgaTU6FIF2ZnPwwfy7xgYi/Nj4=
+    file_glob: true
+    file: products/*
+    skip_cleanup: true
+    on:
+        repo: wraith1995/Teem.jl
+        tags: true
